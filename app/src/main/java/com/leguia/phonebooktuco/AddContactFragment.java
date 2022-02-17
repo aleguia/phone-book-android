@@ -2,6 +2,8 @@ package com.leguia.phonebooktuco;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +21,43 @@ public class AddContactFragment extends Fragment {
     private FragmentAddContactBinding binding;
     private PhoneBookViewModel viewModel;
 
+
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
+            @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
 
         binding = FragmentAddContactBinding.inflate(inflater, container, false);
 
         viewModel = new ViewModelProvider(requireActivity()).get(PhoneBookViewModel.class);
-        viewModel.succes().observe(getViewLifecycleOwner(), event -> {
-                            NavHostFragment.findNavController(AddContactFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
+        viewModel.succes().observe(getViewLifecycleOwner(), event ->
+                NavHostFragment.findNavController(AddContactFragment.this)
+                        .navigate(R.id.action_SecondFragment_to_FirstFragment));
+        viewModel.error().observe(getViewLifecycleOwner(), error -> {
+            switch (error) {
+                case FIRSTNAME_EMPTY:
+                    binding.firstnameInput.setError(error.getMessage());
+                    binding.lastnameInput.setError("");
+                    binding.phoneInput.setError("");
+                    break;
+                case LASTNAME_EMPTY:
+                    binding.firstnameInput.setError("");
+                    binding.lastnameInput.setError(error.getMessage());
+                    binding.phoneInput.setError("");
+                    break;
+                case PHONE_NUMBER_EMPTY:
+                    binding.firstnameInput.setError("");
+                    binding.lastnameInput.setError("");
+                    binding.phoneInput.setError(error.getMessage());
+                    break;
+                default:
+                    binding.firstnameInput.setError("");
+                    binding.lastnameInput.setError("");
+                    binding.phoneInput.setError("");
+            }
         });
+
         return binding.getRoot();
     }
 
@@ -45,6 +71,7 @@ public class AddContactFragment extends Fragment {
     public void onPause() {
         super.onPause();
         View view = requireActivity().getCurrentFocus();
+        viewModel.reset();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -55,15 +82,10 @@ public class AddContactFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                viewModel.add(binding.firstnameInput.getEditText().getText().toString(),
-                                binding.lastnameInput.getEditText().getText().toString(),
-                                binding.phoneInput.getEditText().getText().toString());
-            }
-        });
+        binding.buttonSecond.setOnClickListener(view1 -> viewModel.add(
+                binding.firstnameInput.getEditText().getText().toString(),
+                binding.lastnameInput.getEditText().getText().toString(),
+                binding.phoneInput.getEditText().getText().toString()));
     }
 
     @Override

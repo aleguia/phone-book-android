@@ -48,34 +48,26 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                int id = destination.getId();
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            int id = destination.getId();
 
-                if (id == R.id.FirstFragment) {
-                    mDestination = R.id.FirstFragment;
-                    binding.fab.setVisibility(View.VISIBLE);
-                } else if (id == R.id.SecondFragment) {
-                    mDestination = R.id.SecondFragment;
-                }
-
-
+            if (id == R.id.FirstFragment) {
+                mDestination = R.id.FirstFragment;
+                binding.fab.setVisibility(View.VISIBLE);
+            } else if (id == R.id.SecondFragment) {
+                mDestination = R.id.SecondFragment;
             }
+
+
         });
 
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.SecondFragment);
-                binding.fab.setVisibility(View.GONE);
-            }
+        binding.fab.setOnClickListener(view -> {
+            navController.navigate(R.id.SecondFragment);
+            binding.fab.setVisibility(View.GONE);
         });
 
         viewModel = new ViewModelProvider(this).get(PhoneBookViewModel.class);
-
-       viewModel.tempSet();
     }
 
     @Override

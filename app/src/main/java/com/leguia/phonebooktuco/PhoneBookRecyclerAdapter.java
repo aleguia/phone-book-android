@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class PhoneBookRecyclerAdapter extends RecyclerView.Adapter<PhoneBookRecyclerAdapter.ViewHolder> {
 
-    private Records records = new Records();
+    private List<PhoneBookRecord> records = new ArrayList<>();
 
     /**
      * Provide a reference to the type of views that you are using
@@ -49,12 +50,13 @@ public class PhoneBookRecyclerAdapter extends RecyclerView.Adapter<PhoneBookRecy
 
     public PhoneBookRecyclerAdapter() {    }
 
-    public void setRecords(Records records) {
+    public void setRecords(List<PhoneBookRecord> records) {
         this.records = records;
         notifyDataSetChanged();
     }
 
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view, which defines the UI of the list item
@@ -75,7 +77,7 @@ public class PhoneBookRecyclerAdapter extends RecyclerView.Adapter<PhoneBookRecy
 
         viewHolder.getFirstName().setText(item.getFirstName());
         viewHolder.getLastName().setText(item.getLastName());
-        viewHolder.getPhoneNumber().setText(item.getNumber());
+        viewHolder.getPhoneNumber().setText(item.getPhoneNumber());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
